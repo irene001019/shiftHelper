@@ -5,8 +5,6 @@ TARGET_NAMES = ["Sophia", "Anchen", "Yen", "Emily", "Karmen", "Man-lin", "Alizey
 name_pattern = '|'.join(re.escape(name) for name in TARGET_NAMES)
 schedule_pattern = re.compile(rf"(?P<name>{name_pattern})\s+(?P<start_time>\d{{1,2}}(?::\d{{2}})?)-(?P<end_time>close|\d{{1,2}}(?::\d{{2}})?)(?:\s+(?P<close_duty>\d+))?(?:\s+\((?P<duty>[A-Z])\))?")
 
-
-
 # make it 7 days
 def parse_weekly_row(list):
     if len(list) < 7:
@@ -22,7 +20,6 @@ def extract_schedule(line):
 
     for match in schedule_pattern.finditer(line):
         data = match.groupdict()
-      
         result = {
             'name': data['name'],
             'start_time': data['start_time'],
@@ -32,5 +29,3 @@ def extract_schedule(line):
         }
         results.append(result)
     return results
-
-

@@ -1,30 +1,35 @@
 import pdfplumber
+from schedule_manager import ScheduleManager
 from extract_dataformat import *
-from utils import *
 from dateCalculation import *
 
-pdf_path = "PCL Schedule June 16-30.pdf"
+pdf_path = "../PCL Schedule June 16-30.pdf"
 index = 1
-overall_schedule = []
-year = 2025
-month = 6
+overall_schedule = [] #for formating
 
 
 with pdfplumber.open(pdf_path) as pdf:
+
+    #get the first page, extract the text
     page= pdf.pages[0]
     text = page.extract_text()
-    for line in text.split("\n")[9:37]:
-        list = extract_schedule(line)
-        if list:
-            overall_schedule.append(parse_weekly_row(list))
+    #split the text by \n, get the year and the month
+    lines = text.split("\n")
+    line1 = lines[1].split(" ")
+    year, month = int(line1[1]), month_name_to_number(line1[0])
+
+    for line in lines[9:37]:
+        blocks = extract_schedule(line)
+        if blocks:
+            overall_schedule.append(parse_weekly_row(blocks))
         else:
             overall_schedule.append(["empty"])
         
     #fill the date, if reach empty week+1
-    week = -2
-    for list in overall_schedule:
+    week = -1
+    for row in overall_schedule:
         day_in_week = 0
-        for data in list:
+        for data in row:
             if data == "empty":
                 week += 1
                 continue
@@ -39,6 +44,8 @@ with pdfplumber.open(pdf_path) as pdf:
                 else:
                     data['end_time'] = convert_to_24h(data['end_time'])
                 
-            print(f"Line {index}: {data}")
             day_in_week += 1
-        index +=1
+
+manager = ScheduleManager(overall_schedule)
+manlin_schedule = manager.get_by_person("Man-lin")
+print(manlin_schedule)
