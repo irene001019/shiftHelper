@@ -79,7 +79,7 @@ class ScheduleManager:
                 continue
 
             event = Event()
-            event.name = f"Work {entry.get('close_duty') or ''} {'()'+entry.get('duty')+')' or ''}"
+            event.name = f"{entry.get('name')}'s Work {entry.get('close_duty') or ''}({(entry.get('duty')) or ''})"
             event.begin = start_dt
             event.end = end_dt
 
