@@ -51,7 +51,7 @@ class ScheduleManager:
         - filter_fn: callable = optional function to filter schedule entries
         """
         cal = Calendar()
-        tz = timezone("America/Chicago")
+        tz = timezone("America/Winnipeg")
 
         if filter_fn is not None:
             data = list(filter(filter_fn, self.flat_schedule))
@@ -79,7 +79,7 @@ class ScheduleManager:
                 continue
 
             event = Event()
-            event.name = f"Work {entry.get('close_duty') or ''} {'()'+entry.get('duty')+')' or ''}"
+            event.name = f"{entry.get('name')}'s Work {entry.get('close_duty') or ''}({(entry.get('duty')) or ''})"
             event.begin = start_dt
             event.end = end_dt
 
@@ -101,3 +101,6 @@ class ScheduleManager:
 
     def get_all_dates(self):
         return sorted(set(entry["date"] for entry in self.flat_schedule if "date" in entry))
+
+    def __repr__(self):
+        return f"<ScheduleManager with {len(self.flat_schedule)} entries>"
