@@ -47,5 +47,8 @@ with pdfplumber.open(pdf_path) as pdf:
             day_in_week += 1
 
 manager = ScheduleManager(overall_schedule)
-manlin_schedule = manager.get_by_person("Man-lin")
-print(manlin_schedule)
+# manager.export_to_json("../my_schedule.json", filter_fn=lambda x: x["name"] == "Man-lin")
+# manlin_schedule = manager.get_by_person("Man-lin")
+# print(manlin_schedule)
+manager.export_to_ics("../my_ics_schedule.ics", filter_fn=lambda x: x["name"] == "Man-lin")
+
