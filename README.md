@@ -1,6 +1,6 @@
 # shiftHelper
 ## start project
-  ```cd shiftCalendar/   venv\Scripts\activate    python backend/run.py```
+  ``` cd shiftCalendar/backend/ \n  venv\Scripts\activate  \n  python run.py```
 
-## DownLoad requirements
+## Download requirements
   ```pip install -r requirements.txt```
