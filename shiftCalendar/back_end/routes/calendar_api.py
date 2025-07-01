@@ -8,8 +8,7 @@ LATEST_JSON = UPLOAD_DIR / "flat_schedule.json"
 
 GOOGLE_CLIENT_CONFIG = {
     "web": {
-        "client_id": "YOUR_CLIENT_ID",
-        "client_secret": "YOUR_CLIENT_SECRET",
+        "client_id": "956938229950-ligaj3fpehi5mesldb166i7aqef464ju.apps.googleusercontent.com",
         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
         "token_uri": "https://oauth2.googleapis.com/token",
         "redirect_uris": ["https://shifthelper.onrender.com/oauth2callback"]
