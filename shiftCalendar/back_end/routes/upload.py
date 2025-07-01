@@ -27,11 +27,7 @@ async def upload_pdf_form():
             <br><br>
             <button type="submit">Upload</button>
         </form>
-        <script>
-            alert("Upload complete! Return to Gmail Add-on.");
-            window.close(); 
-        </script>
-        
+        <p style="color:green;">After upload, return to Gmail Add-on to view your shifts.</p>
         </body>
     </html>
     """
@@ -63,8 +59,15 @@ async def upload_pdf(file: UploadFile = File(...)):
     #     f.write(file.filename)
 
     return {
-        "message": "✅ PDF parsed successfully",
-        "ics_url": "/schedule?download_ics=true",
-        "available_people_url": "/people",
-        "schedule_url": "/schedule"
+        # "message": "✅ PDF parsed successfully",
+        # "ics_url": "/schedule?download_ics=true",
+        # "available_people_url": "/people",
+        # "schedule_url": "/schedule",
+        """
+            <script>
+                alert("Upload complete! ✅ PDF parsed successfully, Return to Gmail Add-on.");
+                window.close(); 
+            </script>
+        """
+      
     }
