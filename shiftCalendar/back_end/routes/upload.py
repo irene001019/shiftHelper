@@ -27,7 +27,11 @@ async def upload_pdf_form():
             <br><br>
             <button type="submit">Upload</button>
         </form>
-        <p style="color:green;">After upload, return to Gmail Add-on to view your shifts.</p>
+        <script>
+            alert("Upload complete! Return to Gmail Add-on.");
+            window.close(); 
+        </script>
+        
         </body>
     </html>
     """
