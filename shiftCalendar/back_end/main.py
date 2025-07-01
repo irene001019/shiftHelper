@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import schedule, upload
+from .routes import schedule, upload
 from fastapi.responses import RedirectResponse
 
 app = FastAPI()
