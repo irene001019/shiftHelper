@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse,HTMLResponse
 from pathlib import Path
 from typing import Optional
 import json
@@ -10,7 +10,6 @@ router = APIRouter()
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 
-DOWNLOAD_DIR = Path(__file__).parent.parent / "uploads"
 LATEST_JSON = UPLOAD_DIR / "flat_schedule.json"
 LATEST_PDF_TRACKER = UPLOAD_DIR / "latest_pdf.txt"
 
@@ -53,6 +52,22 @@ def get_schedule(
         "count": len(filtered),
         "data": filtered
     }
+
+@router.get("/download-page", response_class=HTMLResponse)
+def get_schedule_download_page(name: str):
+    url = f"/schedule?name={name}&download_ics=true"
+    return f"""
+    <html>
+      <head><title>Download {name}'s Calendar</title></head>
+      <body>
+        <script>
+          window.location.href = '{url}';
+        </script>
+        <p>If the download doesn't start automatically, <a href="{url}">click here</a>.</p>
+      </body>
+    </html>
+    """
+
 
 @router.get("/people")
 def get_people():
