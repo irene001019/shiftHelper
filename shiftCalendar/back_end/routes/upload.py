@@ -58,18 +58,12 @@ async def upload_pdf(file: UploadFile = File(...)):
     # with open(latest_pdf_tracker, "w") as f:
     #     f.write(file.filename)
 
-    return """
-            <html>
-                <script>
-                    alert("Upload complete! ✅ PDF parsed successfully, Return to Gmail Add-on.");
-                    window.close(); 
-                </script>
-            <html/>
-        """
-        # {"message": "✅ PDF parsed successfully",
-        # "ics_url": "/schedule?download_ics=true",
-        # "available_people_url": "/people",
-        # "schedule_url": "/schedule"}
+    return{
+        "message": "✅ PDF parsed successfully",
+        "ics_url": "/schedule?download_ics=true",
+        "available_people_url": "/people",
+        "schedule_url": "/schedule"
+        }
         
       
     
