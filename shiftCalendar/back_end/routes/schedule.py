@@ -9,6 +9,8 @@ from schedule_manager import ScheduleManager
 router = APIRouter()
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
+
+DOWNLOAD_DIR = Path(__file__).parent.parent / "uploads"
 LATEST_JSON = UPLOAD_DIR / "flat_schedule.json"
 LATEST_PDF_TRACKER = UPLOAD_DIR / "latest_pdf.txt"
 
