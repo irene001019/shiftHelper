@@ -4,7 +4,7 @@
   ``` cd shiftCalendar pip install -r requirements.txt```
 
 ### Start project
-  ``` cd backend/  venv\Scripts\activate  python run.py```  
+  ```  venv\Scripts\activate  cd back_end python run.py```  
   
 ### Open FastAPI
  [FastAPI page](http://127.0.0.1:8000)
