@@ -1,9 +1,10 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Query
 from fastapi.responses import JSONResponse, HTMLResponse
 from pathlib import Path
 
 from parseSchedule import parse_schedule_pdf
 from schedule_manager import ScheduleManager
+from typing import Optional
 
 router = APIRouter()
 
@@ -33,7 +34,9 @@ async def upload_pdf_form():
     """
 
 @router.post("/upload-pdf")
-async def upload_pdf(file: UploadFile = File(...)):
+async def upload_pdf(file: UploadFile = File(...),
+                    year: Optional[int] = Query(None),
+                    month: Optional[int] = Query(None)):
     if not file.filename.endswith(".pdf"):
         return JSONResponse({"error": "Only PDF files are supported."}, status_code=400)
 
@@ -42,7 +45,7 @@ async def upload_pdf(file: UploadFile = File(...)):
         f.write(await file.read())
 
     # 解析 PDF → overall_schedule
-    overall_schedule = parse_schedule_pdf(str(file_path))
+    overall_schedule = parse_schedule_pdf(str(file_path), year, month)
     manager = ScheduleManager(overall_schedule)
 
     # 儲存 JSON 給前端查詢用

@@ -5,7 +5,7 @@ from dateCalculation import *
 # pdf_path = "../PCL Schedule June 16-30.pdf"
 # index = 1
 
-def parse_schedule_pdf(pdf_path):
+def parse_schedule_pdf(pdf_path, year, month):
 
     with pdfplumber.open(pdf_path) as pdf:
         overall_schedule = [] #for formating
@@ -13,11 +13,8 @@ def parse_schedule_pdf(pdf_path):
         page= pdf.pages[0]
         text = page.extract_text()
 
-        #split the text by \n, get the year and the month
         lines = text.split("\n")
-        line1 = lines[1].split(" ")
-        year, month = int(line1[1]), month_name_to_number(line1[0])
-
+       
         for line in lines[9:37]:
             blocks = extract_schedule(line)
             if blocks:
