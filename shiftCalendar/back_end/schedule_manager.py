@@ -1,4 +1,4 @@
-from ics import Calendar, Event
+from ics import Calendar, Event # type: ignore 
 from datetime import datetime
 from pytz import timezone
 import json
@@ -39,7 +39,7 @@ class ScheduleManager:
 
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        print(f"✅ Schedule exported to {os.path.abspath(file_path)}")
+        print(f"✅.json Schedule exported to {os.path.abspath(file_path)}")
 
 
     def export_to_ics(self, file_path="schedule.ics", filter_fn=None):

@@ -17,6 +17,7 @@ env/
 backend/uploads/
 *.pdf
 *.ics
+*.json
 
 # === System Files ===
 .DS_Store

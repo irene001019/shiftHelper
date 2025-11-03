@@ -1,7 +1,7 @@
 import re
 from dateCalculation import *
 
-TARGET_NAMES = ["Sophia", "Anchen", "Yen", "Emily", "Karmen", "Man-lin", "Alizey", "Dani", "Ruby"]  
+TARGET_NAMES = ["Sophia", "Anchen", "Yen", "Emily", "Karmen", "Man-lin", "Sommer", "Dani", "Ruby"]  
 name_pattern = '|'.join(re.escape(name) for name in TARGET_NAMES)
 schedule_pattern = re.compile(rf"(?P<name>{name_pattern})\s+(?P<start_time>\d{{1,2}}(?::\d{{2}})?)-(?P<end_time>close|\d{{1,2}}(?::\d{{2}})?)(?:\s+(?P<close_duty>\d+))?(?:\s+\((?P<duty>[A-Z])\))?")
 
