@@ -3,12 +3,11 @@
 
 import socket
 import os
-from urllib.parse import unquote_plus
 from parseSchedule import parse_schedule_pdf
 from schedule_manager import ScheduleManager
 
 HOST = '0.0.0.0'
-PORT = 8000
+PORT = int(os.environ.get("PORT", 8000))
 
 bad_header = b"HTTP/1.1 400 Bad Request\r\n\r\nBad Request"
 not_found_header = b"HTTP/1.1 404 Not Found\r\n\r\nNot Found"
