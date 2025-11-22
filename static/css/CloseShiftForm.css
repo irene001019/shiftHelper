@@ -1,12 +1,5 @@
 /* Close Shift Form Styles */
 
-.webname {
-    font-size: 30px;
-    margin-bottom: 15px;
-    color: #2c3e50;
-    text-align: center;
-}
-
 /* Main Container */
 .form-container {
     max-width: 800px;
@@ -62,7 +55,7 @@
 /* Radio Buttons */
 .radio-group {
     flex: 1;
-    display: flex;
+    /* display: flex; */
     gap: 15px;
 }
 
@@ -96,22 +89,6 @@
     display: flex;
     justify-content: center;
     gap: 20px;
-}
-
-.submitbtn, .clearbtn, .moneybtn {
-    background-color: #f39c12;
-    color: white;
-    padding: 10px 25px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
-    display: inline-block;
-    border: none;
-}
-
-.submitbtn:hover, .clearbtn:hover, .moneybtn:hover {
-    background-color: #e67e22;
 }
 
 .clearbtn {
