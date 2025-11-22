@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
+  <title>PDF → ICS Converter</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -60,80 +61,85 @@
   </style>
 </head>
 
-  <body>
-    <h1>📅 PDF → ICS Converter</h1>
-    <p>Upload your schedule PDF and convert it into a downloadable .ics calendar file.</p>
+<body>
+  <h1>📅 PDF → ICS Converter</h1>
+  <p>Upload your schedule PDF and convert it into a downloadable .ics calendar file.</p>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-      <label>📂 Select Schedule PDF:</label><br>
-      <input type="file" name="file" accept="application/pdf" required><br>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <label>📂 Select Schedule PDF:</label><br>
+    <input type="file" name="file" accept="application/pdf" required><br>
 
-      <label>📅 Start Date:</label><br>
-      <input type="date" name="start_date"><br>
+    <label>📅 Start Date:</label><br>
+    <input type="date" name="start_date"><br>
 
-      <label>📅 End Date:</label><br>
-      <input type="date" name="end_date"><br>
+    <label>📅 End Date:</label><br>
+    <input type="date" name="end_date"><br>
 
-      <label>Select Person</label><br>
-      <select id="person_name" name="person_name">
-        <option value="">-- Select Person --</option>
-        <option value="Anchen">Anchen</option>
-        <option value="Dani">Dani</option>
-        <option value="Emily">Emily</option>
-        <option value="Karmen">Karmen</option>
-        <option value="Man-lin">Man-lin</option>
-        <option value="Ruby">Ruby</option>
-        <option value="Sommer">Sommer</option>
-        <option value="Sophia">Sophia</option>
-        <option value="Yen">Yen</option>
-      </select><br>
+    <label>Select Person</label><br>
+    <select id="person_name" name="person_name">
+      <option value="">-- Select Person --</option>
+      <option value="Anchen">Anchen</option>
+      <option value="Dani">Dani</option>
+      <option value="Emily">Emily</option>
+      <option value="Karmen">Karmen</option>
+      <option value="Man-lin">Man-lin</option>
+      <option value="Ruby">Ruby</option>
+      <option value="Sommer">Sommer</option>
+      <option value="Sophia">Sophia</option>
+      <option value="Yen">Yen</option>
+    </select><br>
 
-      <button type="submit">Upload & Convert</button>
-    </form>
+    <div style="margin: 15px 0;">
+      <input type="checkbox" id="sync_google" name="sync_google" style="width: auto;">
+      <label for="sync_google" style="margin-right: 0;">Sync to Google Calendar</label>
+    </div>
 
-    <div id="result"></div>
+    <button type="submit">Upload & Convert</button>
+  </form>
 
-    <script>
-      const form = document.getElementById("uploadForm");
-      const result = document.getElementById("result");
-      const startDateInput = document.querySelector('input[name="start_date"]');
-      const endDateInput = document.querySelector('input[name="end_date"]');
+  <div id="result"></div>
 
-      // Set default Start Date to 1st of current month, End Date to last day of current month
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth(); // 0-indexed
+  <script>
+    const form = document.getElementById("uploadForm");
+    const result = document.getElementById("result");
+    const startDateInput = document.querySelector('input[name="start_date"]');
+    const endDateInput = document.querySelector('input[name="end_date"]');
 
-      const firstDay = new Date(Date.UTC(year, month, 1));
-      const lastDay = new Date(Date.UTC(year, month + 1, 0));
+    // Set default Start Date to 1st of current month, End Date to last day of current month
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // 0-indexed
 
-      startDateInput.value = firstDay.toISOString().split('T')[0];
-      endDateInput.value = lastDay.toISOString().split('T')[0];
+    const firstDay = new Date(Date.UTC(year, month, 1));
+    const lastDay = new Date(Date.UTC(year, month + 1, 0));
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        result.innerHTML = "⏳ Uploading and converting... please wait.";
+    startDateInput.value = firstDay.toISOString().split('T')[0];
+    endDateInput.value = lastDay.toISOString().split('T')[0];
 
-        const formData = new FormData(form);
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      result.innerHTML = "⏳ Uploading and converting... please wait.";
 
-        try {
-          const response = await fetch("/upload", {
-            method: "POST",
-            body: formData
-          });
+      const formData = new FormData(form);
 
-          if (!response.ok) {
-            result.innerHTML = "❌ Upload failed.";
-            return;
-          }
+      try {
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData
+        });
 
-          const html = await response.text();
-          result.innerHTML = html; // server sends HTML snippet with download link
-        } catch (err) {
-          result.innerHTML = "⚠️ Error: " + err;
+        if (!response.ok) {
+          result.innerHTML = "❌ Upload failed.";
+          return;
         }
-      });
-    </script>
-  </body>
 
-  </html>
+        const html = await response.text();
+        result.innerHTML = html; // server sends HTML snippet with download link
+      } catch (err) {
+        result.innerHTML = "⚠️ Error: " + err;
+      }
+    });
+  </script>
+</body>
+
+</html>

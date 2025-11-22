@@ -6,6 +6,7 @@ import os
 from parseSchedule import parse_schedule_pdf
 from schedule_manager import ScheduleManager
 from datetime import datetime
+import google_calendar
 
 HOST = '0.0.0.0'
 PORT = int(os.environ.get("PORT", 8000))
@@ -24,6 +25,7 @@ def save_file_from_request(req_body_bytes: bytes, boundary: str):
 
     filename, person_name = None, None
     start_date, end_date = None, None
+    sync_google = False
     pdf_bytes = None
 
     for seg in segments:
@@ -51,6 +53,8 @@ def save_file_from_request(req_body_bytes: bytes, boundary: str):
         elif 'name="end_date"' in header_str:
             val = data.decode("utf-8", errors="ignore").strip()
             end_date = val if val else None
+        elif 'name="sync_google"' in header_str:
+            sync_google = True
 
     if not filename or pdf_bytes is None:
         raise ValueError("No valid PDF found in form data.")
@@ -60,7 +64,7 @@ def save_file_from_request(req_body_bytes: bytes, boundary: str):
     with open(pdf_path, "wb") as f:
         f.write(pdf_bytes)
 
-    return pdf_path, person_name, start_date, end_date
+    return pdf_path, person_name, start_date, end_date, sync_google
 
 
 def handle_request(data: bytes):
@@ -116,7 +120,7 @@ def handle_request(data: bytes):
             if not boundary:
                 return bad_header
 
-            pdf_path, person_name, start_date, end_date = save_file_from_request(body, boundary)
+            pdf_path, person_name, start_date, end_date, sync_google = save_file_from_request(body, boundary)
             
             # Derive year/month from start_date if available, else use current date
             year, month = None, None
@@ -133,7 +137,7 @@ def handle_request(data: bytes):
                  year = now.year
                  month = now.month
 
-            print(f"📄 Received {pdf_path} ({year}-{month} : {person_name}) Date Range: {start_date} to {end_date}")
+            print(f"📄 Received {pdf_path} ({year}-{month} : {person_name}) Date Range: {start_date} to {end_date} Sync: {sync_google}")
 
             # Process the uploaded PDF
             parsed = parse_schedule_pdf(pdf_path, year, month)
@@ -145,13 +149,30 @@ def handle_request(data: bytes):
             mgr.export_to_ics(file_path=ics_path, filter_fn=lambda e: e.get("name") == person_name, start_date=start_date, end_date=end_date)
             mgr.export_to_json(file_path=json_path, filter_fn=lambda e: e.get("name") == person_name, start_date=start_date, end_date=end_date)
 
+            sync_msg = ""
+            if sync_google:
+                # Filter events first
+                all_events = mgr.flat_schedule
+                filtered_events = [e for e in all_events if e.get("name") == person_name]
+                if start_date:
+                    filtered_events = [e for e in filtered_events if e.get("date") and e.get("date") >= start_date]
+                if end_date:
+                    filtered_events = [e for e in filtered_events if e.get("date") and e.get("date") <= end_date]
+                
+                success = google_calendar.add_events_to_calendar(filtered_events)
+                if success:
+                    sync_msg = "<br><b>✅ Synced to Google Calendar!</b>"
+                else:
+                    sync_msg = "<br><b>⚠️ Sync failed. Check console/credentials.</b>"
+
             # mgr.get_by_person(person_name)
 
             # Respond on the same page (no redirect)
             msg = f"""
             <html><body style='font-family:sans-serif; text-align:center;'>
-            <h2>✅ Successfully converted {os.path.basename(pdf_path)}!</h2>
-            <a href='/download/schedule.ics'>Download ICS file</a><br><br>
+            <h2>Successfully converted {os.path.basename(pdf_path)}!</h2>
+            {sync_msg}
+            <br><br><a href='/download/schedule.ics'>Download ICS file</a><br><br>
             <a href='/'>⬅ Back</a>
             </body></html>
             """
