@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <title>PDF → ICS Converter</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,18 +11,22 @@
       background: #f7f8fa;
       color: #333;
     }
+
     h1 {
       color: #2c3e50;
     }
+
     form {
       background: white;
       display: inline-block;
       padding: 30px 40px;
       border-radius: 15px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
       margin-top: 30px;
     }
-    input, select {
+
+    input,
+    select {
       margin: 10px 0;
       padding: 8px 10px;
       width: 220px;
@@ -30,6 +34,7 @@
       border: 1px solid #ccc;
       font-size: 15px;
     }
+
     button {
       background: #3498db;
       color: white;
@@ -40,78 +45,95 @@
       cursor: pointer;
       transition: background 0.3s;
     }
+
     button:hover {
       background: #2980b9;
     }
+
     label {
       margin-right: 25px;
     }
+
     #result {
       margin-top: 25px;
     }
-    
   </style>
 </head>
-<body>
-  <h1>📅 PDF → ICS Converter</h1>
-  <p>Upload your schedule PDF and convert it into a downloadable .ics calendar file.</p>
 
-  <form id="uploadForm" enctype="multipart/form-data">
-    <label>📂 Select Schedule PDF:</label><br>
-    <input type="file" name="file" accept="application/pdf" required><br>
+  <body>
+    <h1>📅 PDF → ICS Converter</h1>
+    <p>Upload your schedule PDF and convert it into a downloadable .ics calendar file.</p>
 
-    <label>🗓️ Year (2000-2100):</label><br>
-    <input type="number" name="year" min="2000" max="2100" required><br>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <label>📂 Select Schedule PDF:</label><br>
+      <input type="file" name="file" accept="application/pdf" required><br>
 
-    <label>📆 Month (1–12):</label><br>
-    <input type="number" name="month" min="1" max="12" required><br>
+      <label>📅 Start Date:</label><br>
+      <input type="date" name="start_date"><br>
 
-    <label>Select Person</label><br>
-    <select id ="person_name" name="person_name">
-      <option value="">-- Select Person --</option>
-      <option value="Anchen">Anchen</option>
-      <option value="Dani">Dani</option>
-      <option value="Emily">Emily</option>
-      <option value="Karmen">Karmen</option>
-      <option value="Man-lin">Man-lin</option>
-      <option value="Ruby">Ruby</option>
-      <option value="Sommer">Sommer</option>
-      <option value="Sophia">Sophia</option>
-      <option value="Yen">Yen</option>
-    </select><br>
+      <label>📅 End Date:</label><br>
+      <input type="date" name="end_date"><br>
 
-    <button type="submit">Upload & Convert</button>
-  </form>
+      <label>Select Person</label><br>
+      <select id="person_name" name="person_name">
+        <option value="">-- Select Person --</option>
+        <option value="Anchen">Anchen</option>
+        <option value="Dani">Dani</option>
+        <option value="Emily">Emily</option>
+        <option value="Karmen">Karmen</option>
+        <option value="Man-lin">Man-lin</option>
+        <option value="Ruby">Ruby</option>
+        <option value="Sommer">Sommer</option>
+        <option value="Sophia">Sophia</option>
+        <option value="Yen">Yen</option>
+      </select><br>
 
-  <div id="result"></div>
+      <button type="submit">Upload & Convert</button>
+    </form>
 
-  <script>
-    const form = document.getElementById("uploadForm");
-    const result = document.getElementById("result");
+    <div id="result"></div>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      result.innerHTML = "⏳ Uploading and converting... please wait.";
+    <script>
+      const form = document.getElementById("uploadForm");
+      const result = document.getElementById("result");
+      const startDateInput = document.querySelector('input[name="start_date"]');
+      const endDateInput = document.querySelector('input[name="end_date"]');
 
-      const formData = new FormData(form);
+      // Set default Start Date to 1st of current month, End Date to last day of current month
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth(); // 0-indexed
 
-      try {
-        const response = await fetch("/upload", {
-          method: "POST",
-          body: formData
-        });
+      const firstDay = new Date(Date.UTC(year, month, 1));
+      const lastDay = new Date(Date.UTC(year, month + 1, 0));
 
-        if (!response.ok) {
-          result.innerHTML = "❌ Upload failed.";
-          return;
+      startDateInput.value = firstDay.toISOString().split('T')[0];
+      endDateInput.value = lastDay.toISOString().split('T')[0];
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        result.innerHTML = "⏳ Uploading and converting... please wait.";
+
+        const formData = new FormData(form);
+
+        try {
+          const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!response.ok) {
+            result.innerHTML = "❌ Upload failed.";
+            return;
+          }
+
+          const html = await response.text();
+          result.innerHTML = html; // server sends HTML snippet with download link
+        } catch (err) {
+          result.innerHTML = "⚠️ Error: " + err;
         }
+      });
+    </script>
+  </body>
 
-        const html = await response.text();
-        result.innerHTML = html; // server sends HTML snippet with download link
-      } catch (err) {
-        result.innerHTML = "⚠️ Error: " + err;
-      }
-    });
-  </script>
-</body>
-</html>
+  </html>

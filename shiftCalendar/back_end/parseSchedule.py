@@ -1,6 +1,7 @@
 import pdfplumber # type: ignore
 from extract_dataformat import *
 from dateCalculation import *
+from datetime import datetime
 
 
 # pdf_path = "../PCL Schedule Nov 1-15"
@@ -10,8 +11,9 @@ from dateCalculation import *
 def parse_schedule_pdf(pdf_path, year, month):
 
     if year ==None or month== None:
-        year = 2025
-        month = 11
+        now = datetime.now()
+        year = now.year
+        month = now.month
 
     with pdfplumber.open(pdf_path) as pdf:
         overall_schedule = [] #for formating

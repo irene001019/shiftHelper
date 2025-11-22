@@ -5,6 +5,7 @@ import socket
 import os
 from parseSchedule import parse_schedule_pdf
 from schedule_manager import ScheduleManager
+from datetime import datetime
 
 HOST = '0.0.0.0'
 PORT = int(os.environ.get("PORT", 8000))
@@ -16,12 +17,13 @@ ok_header = "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-Type: text/html\r\
 
 def save_file_from_request(req_body_bytes: bytes, boundary: str):
     """
-    Extracts file (PDF), year, and month from multipart/form-data body.
+    Extracts file (PDF) and other form data from multipart/form-data body.
     """
     boundary_bytes = ("--" + boundary).encode()
     segments = req_body_bytes.split(boundary_bytes)
 
-    filename, year, month, person_name = None, None, None, None
+    filename, person_name = None, None
+    start_date, end_date = None, None
     pdf_bytes = None
 
     for seg in segments:
@@ -41,15 +43,14 @@ def save_file_from_request(req_body_bytes: bytes, boundary: str):
             filename = os.path.basename(filename)
             pdf_bytes = data.strip(b"\r\n")  # keep binary safe
 
-        elif 'name="year"' in header_str:
-            val = data.decode("utf-8", errors="ignore").strip()
-            year = int(val) if val.isdigit() else None
-
-        elif 'name="month"' in header_str:
-            val = data.decode("utf-8", errors="ignore").strip()
-            month = int(val) if val.isdigit() else None
         elif 'name="person_name"' in header_str:
             person_name = data.decode("utf-8", errors="ignore").strip()
+        elif 'name="start_date"' in header_str:
+            val = data.decode("utf-8", errors="ignore").strip()
+            start_date = val if val else None
+        elif 'name="end_date"' in header_str:
+            val = data.decode("utf-8", errors="ignore").strip()
+            end_date = val if val else None
 
     if not filename or pdf_bytes is None:
         raise ValueError("No valid PDF found in form data.")
@@ -59,7 +60,7 @@ def save_file_from_request(req_body_bytes: bytes, boundary: str):
     with open(pdf_path, "wb") as f:
         f.write(pdf_bytes)
 
-    return pdf_path, year, month, person_name
+    return pdf_path, person_name, start_date, end_date
 
 
 def handle_request(data: bytes):
@@ -115,8 +116,24 @@ def handle_request(data: bytes):
             if not boundary:
                 return bad_header
 
-            pdf_path, year, month, person_name = save_file_from_request(body, boundary)
-            print(f"📄 Received {pdf_path} ({year}-{month} : {person_name})")
+            pdf_path, person_name, start_date, end_date = save_file_from_request(body, boundary)
+            
+            # Derive year/month from start_date if available, else use current date
+            year, month = None, None
+            if start_date:
+                try:
+                    dt = datetime.strptime(start_date, "%Y-%m-%d")
+                    year = dt.year
+                    month = dt.month
+                except ValueError:
+                    pass 
+            
+            if not year or not month:
+                 now = datetime.now()
+                 year = now.year
+                 month = now.month
+
+            print(f"📄 Received {pdf_path} ({year}-{month} : {person_name}) Date Range: {start_date} to {end_date}")
 
             # Process the uploaded PDF
             parsed = parse_schedule_pdf(pdf_path, year, month)
@@ -125,8 +142,8 @@ def handle_request(data: bytes):
             os.makedirs("output", exist_ok=True)
             ics_path = os.path.join("output", f"schedule.ics")
             json_path = os.path.join("output", f"schedule.json")
-            mgr.export_to_ics(file_path=ics_path, filter_fn=lambda e: e.get("name") == person_name)
-            mgr.export_to_json(file_path=json_path, filter_fn=lambda e: e.get("name") == person_name)
+            mgr.export_to_ics(file_path=ics_path, filter_fn=lambda e: e.get("name") == person_name, start_date=start_date, end_date=end_date)
+            mgr.export_to_json(file_path=json_path, filter_fn=lambda e: e.get("name") == person_name, start_date=start_date, end_date=end_date)
 
             # mgr.get_by_person(person_name)
 

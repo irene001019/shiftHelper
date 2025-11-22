@@ -24,7 +24,7 @@ class ScheduleManager:
                             flat.append(entry)
         return flat
 
-    def export_to_json(self, file_path="output_schedule.json", filter_fn=None):
+    def export_to_json(self, file_path="output_schedule.json", filter_fn=None, start_date=None, end_date=None):
         """
         Export flat schedule to a JSON file.
 
@@ -37,12 +37,17 @@ class ScheduleManager:
         else:
             data = self.flat_schedule
 
+        if start_date:
+            data = [e for e in data if e.get("date") and e.get("date") >= start_date]
+        if end_date:
+            data = [e for e in data if e.get("date") and e.get("date") <= end_date]
+
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         print(f"✅.json Schedule exported to {os.path.abspath(file_path)}")
 
 
-    def export_to_ics(self, file_path="schedule.ics", filter_fn=None):
+    def export_to_ics(self, file_path="schedule.ics", filter_fn=None, start_date=None, end_date=None):
         """
         Export flat schedule to a ics file.
 
@@ -57,6 +62,11 @@ class ScheduleManager:
             data = list(filter(filter_fn, self.flat_schedule))
         else:
             data = self.flat_schedule
+
+        if start_date:
+            data = [e for e in data if e.get("date") and e.get("date") >= start_date]
+        if end_date:
+            data = [e for e in data if e.get("date") and e.get("date") <= end_date]
 
         for entry in data:
             # Parse datetime
