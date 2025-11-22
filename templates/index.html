@@ -3,58 +3,265 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shift Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Handlee&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/index.css">
+  <link rel="stylesheet" href="/static/css/CloseShiftForm.css">
 </head>
 
 <body>
-  <div style="margin-bottom: 20px;">
-    <a href="/" style="text-decoration: none;">
-      <button style="background: #2c3e50; cursor: default;">Calendar Converter</button>
-    </a>
-    <a href="/close-shift" style="text-decoration: none;">
-      <button style="background: #95a5a6;">Close Shift Form</button>
-    </a>
+  <div class="nav-container">
+    <button id="tab-converter" class="nav-tab active" onclick="switchTab('converter')">Calendar Converter</button>
+    <button id="tab-close-shift" class="nav-tab" onclick="switchTab('close-shift')">Close Shift Form</button>
   </div>
 
-  <h1>📅 PDF → ICS Converter</h1>
-  <p>Upload your schedule PDF and convert it into a downloadable .ics calendar file.</p>
+  <!-- Calendar Converter Section -->
+  <div id="converter-section" class="tab-content">
+    <h1>PDF → ICS Converter</h1>
+    <hr />
+    <p>Upload your schedule PDF and convert it into a downloadable .ics calendar file.</p>
 
-  <form id="uploadForm" enctype="multipart/form-data">
-    <label>📂 Select Schedule PDF:</label><br>
-    <input type="file" name="file" accept="application/pdf" required><br>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <label>📂 Select Schedule PDF:</label><br>
+      <input type="file" name="file" accept="application/pdf" required><br>
 
-    <label>📅 Start Date:</label><br>
-    <input type="date" name="start_date"><br>
+      <label>📅 Start Date:</label><br>
+      <input type="date" name="start_date"><br>
 
-    <label>📅 End Date:</label><br>
-    <input type="date" name="end_date"><br>
+      <label>📅 End Date:</label><br>
+      <input type="date" name="end_date"><br>
 
-    <label>Select Person</label><br>
-    <select id="person_name" name="person_name">
-      <option value="">-- Select Person --</option>
-      <option value="Anchen">Anchen</option>
-      <option value="Dani">Dani</option>
-      <option value="Emily">Emily</option>
-      <option value="Karmen">Karmen</option>
-      <option value="Man-lin">Man-lin</option>
-      <option value="Ruby">Ruby</option>
-      <option value="Sommer">Sommer</option>
-      <option value="Sophia">Sophia</option>
-      <option value="Yen">Yen</option>
-    </select><br>
+      <label>Select Person</label><br>
+      <select id="person_name" name="person_name">
+        <option value="">-- Select Person --</option>
+        <option value="Anchen">Anchen</option>
+        <option value="Dani">Dani</option>
+        <option value="Emily">Emily</option>
+        <option value="Karmen">Karmen</option>
+        <option value="Man-lin">Man-lin</option>
+        <option value="Ruby">Ruby</option>
+        <option value="Sommer">Sommer</option>
+        <option value="Sophia">Sophia</option>
+        <option value="Yen">Yen</option>
+      </select><br>
 
-    <div style="margin: 15px 0;">
-      <input type="checkbox" id="sync_google" name="sync_google" style="width: auto;">
-      <label for="sync_google" style="margin-right: 0;">Sync to Google Calendar</label>
+      <div style="margin: 15px 0;">
+        <input type="checkbox" id="sync_google" name="sync_google" style="width: auto;">
+        <label for="sync_google" style="margin-right: 0;">Sync to Google Calendar</label>
+      </div>
+
+      <button type="submit">Upload & Convert</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <!-- Close Shift Form Section -->
+  <div id="close-shift-section" class="tab-content" style="display: none;">
+    <h1>Close shift form</h1>
+    <hr />
+
+    <div id="form-input-view">
+      <form id="myForm">
+        <div class="form-container">
+
+          <!-- Shift Info -->
+          <div class="form-section">
+            <h3>Shift Info</h3>
+            <div class="input-group">
+              <label>Date</label>
+              <input type="date" id="today" name="today">
+            </div>
+            <div class="input-group">
+              <label>Shift</label>
+              <div class="radio-group">
+                <input type="radio" name="Shift" value="Lunch" id="shift-lunch"><label for="shift-lunch">Lunch</label>
+                <input type="radio" name="Shift" value="Dinner" id="shift-dinner"><label
+                  for="shift-dinner">Dinner</label>
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Name</label>
+              <input type="text" id="FirstName" name="name" value="Man-Lin">
+            </div>
+          </div>
+
+          <!-- Sales Data -->
+          <div class="form-section">
+            <h3>Sales & Tips</h3>
+            <div class="input-group">
+              <label>Net Sales #1</label>
+              <input type="number" step="0.01" id="netSale1" name="netSale" value="0">
+            </div>
+            <div class="input-group">
+              <label>Net Sales #2</label>
+              <input type="number" step="0.01" id="netSale2" name="netSale" value="0">
+            </div>
+            <div class="input-group">
+              <label>Debit Total (i)</label>
+              <input type="number" step="0.01" id="DebitTotal" name="DebitTotal" value="0">
+            </div>
+            <div class="input-group">
+              <label>Gift Cards (ii)</label>
+              <input type="number" step="0.01" id="GCU" name="GCU" value="0">
+            </div>
+            <div class="input-group">
+              <label>TB Payment #1</label>
+              <input type="number" step="0.01" id="TB1" name="TB" value="0">
+            </div>
+            <div class="input-group">
+              <label>TB Payment #2</label>
+              <input type="number" step="0.01" id="TB2" name="TB" value="0">
+            </div>
+            <div class="input-group">
+              <label>Debit Tips</label>
+              <input type="number" step="0.01" id="DebitTips" name="DebitTips" value="0">
+            </div>
+          </div>
+
+          <!-- Cash Count -->
+          <div class="form-section">
+            <h3>Cash Count</h3>
+
+            <div class="cash-mode-toggle">
+              <label>Input Mode:</label>
+              <input type="radio" name="cashMode" value="count" id="mode-count" checked onchange="toggleCashMode()">
+              <label for="mode-count">By Count</label>
+              <input type="radio" name="cashMode" value="value" id="mode-value" onchange="toggleCashMode()"> <label
+                for="mode-value">By Value</label>
+            </div>
+
+            <div class="input-group total-override">
+              <label>Total Cash Override (Optional)</label>
+              <input type="number" step="0.01" id="totalCashOverride" placeholder="Enter total amount directly">
+            </div>
+
+            <div class="cash-grid" id="cash-inputs">
+              <div class="cash-item"><label>$100</label><input type="number" id="cash100" name="cash" value="0" min="0"
+                  data-denom="100"></div>
+              <div class="cash-item"><label>$50</label><input type="number" id="cash50" name="cash" value="0" min="0"
+                  data-denom="50"></div>
+              <div class="cash-item"><label>$20</label><input type="number" id="cash20" name="cash" value="0" min="0"
+                  data-denom="20"></div>
+              <div class="cash-item"><label>$10</label><input type="number" id="cash10" name="cash" value="0" min="0"
+                  data-denom="10"></div>
+              <div class="cash-item"><label>$5</label><input type="number" id="cash5" name="cash" value="0" min="0"
+                  data-denom="5"></div>
+              <div class="cash-item"><label>$2</label><input type="number" id="cash2" name="cash" value="0" min="0"
+                  data-denom="2"></div>
+              <div class="cash-item"><label>$1</label><input type="number" id="cash1" name="cash" value="0" min="0"
+                  data-denom="1"></div>
+              <div class="cash-item"><label>25¢</label><input type="number" id="cash025" name="cash" value="0" min="0"
+                  data-denom="0.25"></div>
+              <div class="cash-item"><label>10¢</label><input type="number" id="cash010" name="cash" value="0" min="0"
+                  data-denom="0.10"></div>
+              <div class="cash-item"><label>5¢</label><input type="number" id="cash005" name="cash" value="0" min="0"
+                  data-denom="0.05"></div>
+            </div>
+
+            <div class="action-buttons">
+              <button type="button" class="moneybtn" onclick="Calculate()">Calculate</button>
+            </div>
+
+            <div class="MCF" id="amount" style="display: none;">
+              <span class="lable"> Current Cash Amount: </span>
+              <input id="total" disabled value="$">
+            </div>
+          </div>
+
+        </div>
+      </form>
+
+      <div class="btn-container">
+        <span id="sub" class="submitbtn" onclick="ProcessForm()">Submit</span>
+        <span id="cle" class="clearbtn" onclick="resetForm()">Reset</span>
+      </div>
     </div>
 
-    <button type="submit">Upload & Convert</button>
-  </form>
-
-  <div id="result"></div>
+    <div id="printuser" class="addon" style="display: none; flex-direction: column; align-items: center;">
+      <div class="action-buttons" style="margin-bottom: 20px;">
+        <button class="moneybtn" onclick="editForm()">Back to Edit</button>
+      </div>
+      <!-- Table content generated by JS -->
+      <table>
+        <tr>
+          <th colspan="3" class="contentcenter"><span id="shift">shift</span></th>
+        </tr>
+        <tr>
+          <th class="contentright">Staff Name </th>
+          <th colspan="2" class="oneCell"><span id="staff"></span></th>
+        </tr>
+        <tr>
+          <th class="contentright">Todays date </th>
+          <th colspan="2" class="oneCell"><span id="date1"></span></th>
+        </tr>
+        <tr>
+          <th class="contentright">Net Sales #1 + #2 = Gross Sales </th>
+          <th class="twoCell1"><span id="GrossSales"></span></th>
+          <th class="twoCell2"> [A] </th>
+        </tr>
+        <tr>
+          <th class="contentright">TB Payments: Online </th>
+          <th class="twoCell1"><span id="TBP"></span></th>
+          <th class="twoCell2">[iii]</th>
+        </tr>
+        <tr>
+          <th class="contentright">[i] + [ii] + [iii] </th>
+          <th class="twoCell1"><span id="B"></span></th>
+          <th class="twoCell2">[B]</th>
+        </tr>
+        <tr>
+          <th class="contentright">Total Cash - $200 float </th>
+          <th class="twoCell1"><span id="C"></span></th>
+          <th class="twoCell2">[C]</th>
+        </tr>
+        <tr>
+          <th class="contentright">Total $ collected [B+C] </th>
+          <th class="twoCell1"><span id="D"></span></th>
+          <th class="twoCell2">[D]</th>
+        </tr>
+        <tr>
+          <th class="contentright">Gross Tips [D-A] </th>
+          <th class="twoCell1"><span id="E"> </span></th>
+          <th class="twoCell2">[E]</th>
+        </tr>
+        <tr>
+          <th class="contentright">Card Fee [debit tips x 0.02] </th>
+          <th class="twoCell1"><span id="F">v</th>
+          <th class="twoCell2">[F]</th>
+        </tr>
+        <tr>
+          <th class="contentright">*NET Tips [E-F] </th>
+          <th class="twoCell1"><span id="G"></span></th>
+          <th class="twoCell2">[G]</th>
+        </tr>
+        <tr>
+          <th class="contentright">Kitchen Tips [G*0.4] </th>
+          <th class="twoCell1"><span id="H"></span></th>
+          <th class="twoCell2">[H]</th>
+        </tr>
+        <tr>
+          <th class="contentright">Server Tips [G-H] </th>
+          <th colspan="2" class="oneCell"><span id="G-H"></span></th>
+        </tr>
+        <tr>
+          <th class="contentright">Cash in Bag [C-G] </th>
+          <th class="twoCell1"><span id="I"></span></th>
+          <th class="twoCell2">[I]</th>
+        </tr>
+        <tr>
+          <th class="contentright">[I+B] = [A+F] </th>
+          <th colspan="2" class="oneCell"><span id="check"></span></th>
+        </tr>
+      </table>
+    </div>
+  </div>
 
   <script src="/static/js/index.js"></script>
+  <script src="/static/js/CloseShiftForm.js"></script>
 </body>
 
 </html>

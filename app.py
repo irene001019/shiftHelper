@@ -93,9 +93,7 @@ def handle_request(data: bytes):
                 return ok_header.format(len(html_body)).encode() + html_body
 
             elif path == "/close-shift":
-                with open("templates/close_shift_form.html", "rb") as f:
-                    html_body = f.read()
-                return ok_header.format(len(html_body)).encode() + html_body
+                return b"HTTP/1.1 302 Found\r\nLocation: /\r\n\r\n"
             
             elif path.startswith("/static/"):
                 # Basic static file serving
