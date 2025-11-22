@@ -1,5 +1,5 @@
 import re
-from dateCalculation import *
+from .dateCalculation import *
 
 TARGET_NAMES = ["Sophia", "Anchen", "Yen", "Emily", "Karmen", "Man-lin", "Sommer", "Dani", "Ruby"]  
 name_pattern = '|'.join(re.escape(name) for name in TARGET_NAMES)

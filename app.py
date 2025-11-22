@@ -1,12 +1,11 @@
-
 #connection without fastapi
 
 import socket
 import os
-from parseSchedule import parse_schedule_pdf
-from schedule_manager import ScheduleManager
+from utils.parseSchedule import parse_schedule_pdf
+from utils.schedule_manager import ScheduleManager
 from datetime import datetime
-import google_calendar
+from utils import google_calendar
 
 HOST = '0.0.0.0'
 PORT = int(os.environ.get("PORT", 8000))
@@ -14,6 +13,8 @@ PORT = int(os.environ.get("PORT", 8000))
 bad_header = b"HTTP/1.1 400 Bad Request\r\n\r\nBad Request"
 not_found_header = b"HTTP/1.1 404 Not Found\r\n\r\nNot Found"
 ok_header = "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-Type: text/html\r\n\r\n"
+css_header = "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-Type: text/css\r\n\r\n"
+js_header = "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nContent-Type: application/javascript\r\n\r\n"
 
 
 def save_file_from_request(req_body_bytes: bytes, boundary: str):
@@ -87,9 +88,28 @@ def handle_request(data: bytes):
         # === GET ===
         if method == "GET":
             if path == "/" or path == "/index.html":
-                with open("HomePage.html", "rb") as f:
+                with open("templates/index.html", "rb") as f:
                     html_body = f.read()
                 return ok_header.format(len(html_body)).encode() + html_body
+
+            elif path == "/close-shift":
+                with open("templates/close_shift_form.html", "rb") as f:
+                    html_body = f.read()
+                return ok_header.format(len(html_body)).encode() + html_body
+            
+            elif path.startswith("/static/"):
+                # Basic static file serving
+                file_path = path.lstrip("/") # remove leading /
+                if os.path.exists(file_path):
+                    with open(file_path, "rb") as f:
+                        content = f.read()
+                    if file_path.endswith(".css"):
+                        return css_header.format(len(content)).encode() + content
+                    elif file_path.endswith(".js"):
+                        return js_header.format(len(content)).encode() + content
+                    else:
+                        return ok_header.format(len(content)).encode() + content
+                return not_found_header
 
             elif path.startswith("/download/"):
                 ics_name = path.split("/")[-1]
