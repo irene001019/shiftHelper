@@ -13,3 +13,8 @@ output/
 uploads/
 credentials.json
 token.json
+
+# Azure
+.azure/
+*.log
+requirements_azure.txt
